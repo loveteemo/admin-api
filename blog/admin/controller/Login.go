@@ -3,6 +3,7 @@ package controller
 import (
 	"blog-admin-api/model"
 	"blog-admin-api/utils"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"time"
 )
@@ -12,7 +13,8 @@ func Login(ctx *gin.Context) {
 	var request LoginRequest
 
 	//绑定参数到request
-	err := ctx.ShouldBindJSON(&request)
+	err := ctx.ShouldBind(&request)
+	fmt.Printf("%+v", request)
 	if err != nil {
 		utils.ReturnResult(ctx, -1, "参数错误", nil)
 		return
@@ -41,20 +43,30 @@ func Login(ctx *gin.Context) {
 	tokenString := utils.GenerateToken()
 	response := LoginResponse{
 		Token: tokenString,
+		User: LoginResponseUser{
+			Username: userInfo.Username,
+			Nickname: userInfo.Nickname,
+		},
 	}
 	_ = model.CreateUserToken(userInfo.UserId, tokenString, ctx.ClientIP(), int(time.Now().Unix()+3600*24*7))
 	//返回参数
-	utils.ReturnResult(ctx, 0, "success", response)
+	utils.ReturnResult(ctx, 0, fmt.Sprintf("登录完成，欢迎回来 %s", userInfo.Nickname), response)
 	return
 }
 
 // ===  参数部分
 
 type LoginRequest struct {
-	Username string
-	Password string
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
 type LoginResponse struct {
-	Token string `json:"token"`
+	Token string            `json:"token"`
+	User  LoginResponseUser `json:"user"`
+}
+
+type LoginResponseUser struct {
+	Username string `json:"username"`
+	Nickname string `json:"nickname"`
 }

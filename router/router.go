@@ -1,7 +1,7 @@
 package router
 
 import (
-	"blog-admin-api/controller"
+	adminController "blog-admin-api/blog/admin/controller"
 	"blog-admin-api/middleware"
 	"blog-admin-api/utils"
 	"github.com/gin-contrib/cors"
@@ -17,10 +17,16 @@ func Init() {
 
 	router.Use(cors.Default())
 
-	router.Group("/").Use(middleware.Request())
+	// 后台API
+	admin := router.Group("/blog/admin").Use(middleware.Request())
 	{
-		//登录
-		router.POST("/login", controller.Login)
+		admin.POST("/login", adminController.Login)
+	}
+
+	// 前台API
+	router.Group("/blog/api")
+	{
+
 	}
 
 	err := router.Run(utils.HttpPort)
