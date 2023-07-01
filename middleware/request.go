@@ -11,7 +11,7 @@ func Request() gin.HandlerFunc {
 		blogToken := ctx.GetHeader("Authorization")
 		if blogToken == "" && ctx.Request.URL.Path != "/blog/admin/login" {
 			utils.ReturnResult(ctx, 10000, "请登录", nil)
-			return
+			ctx.Abort()
 		}
 
 		ctx.Next()

@@ -21,6 +21,11 @@ func Initialization() {
 		fmt.Println("conn db err")
 	}
 
+	//调试模式
+	if utils.AppMode == "debug" {
+		db = db.Debug()
+	}
+
 	sqlDb, err := db.DB()
 	if err != nil {
 		fmt.Println("conn db err")
